@@ -1,3 +1,4 @@
+use crate::interface::Sample;
 use crate::interface::track::Track;
 use midly::num::{u4, u7, u15, u28};
 use midly::{Format, Header, MetaMessage, MidiMessage, Smf, Timing, TrackEvent, TrackEventKind};
@@ -25,8 +26,33 @@ impl Song {
         }
     }
 
-    pub fn add_track(&mut self, track: Track) {
-        self.tracks.push(track)
+    /// Constructs a new track object and appends it to the song.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let mut song = Song::new(120);
+    /// let track1 = song.track(Sample::new("my_samples/piano.wav", 60), 0);
+    ///
+    /// assert_eq!(track1.channel(), 0);
+    /// ```
+    pub fn track(&mut self, sample: Sample, channel: u8) -> &mut Track {
+        self.tracks.push(Track::new(sample, channel));
+        self.tracks.last_mut().unwrap()
+    }
+
+    /// Returns all track objects contained in the song.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let mut song = Song::new(120);
+    /// let track1 = song.track(Sample::new("my_samples/piano.wav", 60), 0);
+    ///
+    /// assert_eq!(song.tracks()[0].channel(), 0);
+    /// ```
+    pub fn tracks(self) -> Vec<Track> {
+        self.tracks
     }
 
     pub fn export(&self, name: &str, export_type: ExportType, open_in_default_app: bool) {

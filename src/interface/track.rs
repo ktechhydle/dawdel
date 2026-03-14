@@ -1,8 +1,6 @@
-use crate::interface::{
-    note_data::{Note, NoteData},
-    sample::Sample,
-};
+use crate::interface::{note::Note, sample::Sample};
 
+/// A track object, containing an audio sample, midi channel, and a Vec of note objects.
 pub struct Track {
     sample: Sample,
     channel: u8,
@@ -11,6 +9,16 @@ pub struct Track {
 }
 
 impl Track {
+    /// Constructs a new track object with the specified `sample`, and `channel` being midi channels 0-15.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let mut song = Song::new(120);
+    /// let track1 = Track::new(Sample::new("my_samples/piano.wav", 60), 0);
+    ///
+    /// assert_eq!(track1.channel(), 0);
+    /// ```
     pub fn new(sample: Sample, channel: u8) -> Self {
         Self {
             sample,
@@ -25,31 +33,66 @@ impl Track {
         self.sample
     }
 
-    /// Returns the MIDI channel (0-15) of the track
+    /// Returns the MIDI channel (0-15) of the track.
     pub fn channel(&self) -> u8 {
         self.channel
     }
 
-    /// Returns an array of `Note` objects contained on the track
-    pub fn notes(&self) -> &Vec<Note> {
-        &self.notes
+    /// Returns a Vec of `Note` objects contained on the track.
+    pub fn notes(&self) -> Vec<Note> {
+        self.notes.clone()
     }
 
-    /// Returns the ending time of the most recent note
+    /// Returns the ending time of the most recent note.
     pub fn current_time(&self) -> f32 {
         self.current_time
     }
 
-    pub fn add<T>(&mut self, data: T)
-    where
-        T: NoteData,
-    {
-        for n in data.note_data() {
-            if n.start + n.duration > self.current_time {
-                self.current_time = n.start + n.duration
-            }
+    /// Appends a note to the track, with `pitch` midi numbers 1-127, `velocity` midi numbers 1-127, `start` and `duration` in seconds.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let mut song = Song::new(120);
+    /// let mut track1 = song.track(Sample::new("my_samples/piano.wav", 60), 0);
+    ///
+    /// track1.note(60, 127, 0.0, 2.0); // C4 at full velocity, played for 2 seconds
+    /// ```
+    pub fn note(&mut self, pitch: u8, velocity: u8, start: f32, duration: f32) {
+        if start + duration > self.current_time {
+            self.current_time = start + duration
+        }
 
-            self.notes.push(n);
+        self.notes.push(Note {
+            pitch,
+            velocity: velocity as f32 / 127.0,
+            start,
+            duration,
+        });
+    }
+
+    /// Appends a chord to the track, with `notes` a Vec of indexes midi numbers 1-127, `velocity` midi numbers 1-127, `start` and `duration` in seconds.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let mut song = Song::new(120);
+    /// let mut track1 = song.track(Sample::new("my_samples/piano.wav", 60), 0);
+    ///
+    /// track1.chord(vec![60, 64, 67], 127, 0.0, 2.0); // Csus4 at full velocity, played for 2 seconds
+    /// ```
+    pub fn chord(&mut self, notes: Vec<u8>, velocity: u8, start: f32, duration: f32) {
+        if start + duration > self.current_time {
+            self.current_time = start + duration
+        }
+
+        for n in notes {
+            self.notes.push(Note {
+                pitch: n,
+                velocity: velocity as f32 / 127.0,
+                start,
+                duration,
+            });
         }
     }
 }

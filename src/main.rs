@@ -1,11 +1,24 @@
-use dawdel::interface::{Chord, ExportType, Note, Sample, Song, Track};
+use dawdel::interface::{ExportType, Sample, Song};
 use dawdel::{chord, note};
 
 fn main() {
     let mut song = Song::new(120.0);
-    let mut track1 = Track::new(Sample::new("piano", "test.wav", 60), 10);
-    track1.add(Chord::new(chord!(maj note!(C, 4)), 0.0, 2.0, 127));
+    let track1 = song.track(Sample::new("test.wav", 60), 1);
 
-    song.add_track(track1);
+    for i in 0..8 {
+        track1.chord(
+            chord!(maj note!(C, 4)),
+            127,
+            track1.current_time() + 1.0,
+            2.0,
+        );
+        track1.chord(
+            chord!(min note!(C, 4)),
+            127,
+            track1.current_time() + 1.0,
+            2.0,
+        );
+    }
+
     song.export("output", ExportType::MIDI, true);
 }

@@ -7,5 +7,5 @@ fn main() {
     track1.add(Chord::new(chord!(maj note!(C, 4)), 0.0, 2.0, 127));
 
     song.add_track(track1);
-    song.export("output", ExportType::MIDI);
+    song.export("output", ExportType::MIDI, true);
 }

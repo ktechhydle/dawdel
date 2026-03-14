@@ -8,3 +8,4 @@ description = "Programmatic digital audio workstation for MIDI"
 
 [dependencies]
 midly = "0.5.3"
+open = "5.3.3"

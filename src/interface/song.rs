@@ -29,14 +29,20 @@ impl Song {
         self.tracks.push(track)
     }
 
-    pub fn export(&self, name: &str, export_type: ExportType) {
+    pub fn export(&self, name: &str, export_type: ExportType, open_in_default_app: bool) {
         match export_type {
-            ExportType::MIDI => self.export_midi(name),
+            ExportType::MIDI => {
+                let file_name = self.export_midi(name);
+
+                if open_in_default_app {
+                    open::that(&file_name).expect("Error opening export");
+                }
+            }
             _ => {}
         }
     }
 
-    fn export_midi(&self, name: &str) {
+    fn export_midi(&self, name: &str) -> String {
         let ticks_per_beat: u16 = 480;
 
         let header = Header {
@@ -111,7 +117,10 @@ impl Song {
             tracks: midi_tracks,
         };
 
-        let mut file = File::create(format!("{}.mid", name)).unwrap();
+        let file_name = format!("{}.mid", name);
+        let mut file = File::create(&file_name).unwrap();
         smf.write_std(&mut file).unwrap();
+
+        file_name
     }
 }

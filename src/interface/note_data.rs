@@ -6,7 +6,7 @@ pub trait NoteData {
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```
 /// let note_num = note!(C, 4);
 ///
 /// assert_eq!(note_num, 60)
@@ -91,7 +91,7 @@ impl NoteData for Note {
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```
 /// let note_nums = chord!(maj note!(C, 4));
 ///
 /// assert_eq!(note_nums, vec![60, 64, 67])

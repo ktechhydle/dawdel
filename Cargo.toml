@@ -7,5 +7,6 @@ authors = ["Keller Hydle"]
 description = "Programmatic digital audio workstation for MIDI"
 
 [dependencies]
+hound = "3.5.1"
 midly = "0.5.3"
 open = "5.3.3"

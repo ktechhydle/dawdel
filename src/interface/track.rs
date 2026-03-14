@@ -28,9 +28,9 @@ impl Track {
         }
     }
 
-    /// Returns the `Sample` object of the track
-    pub fn sample(self) -> Sample {
-        self.sample
+    /// Returns a reference to the `Sample` object of the track
+    pub fn sample(&self) -> &Sample {
+        &self.sample
     }
 
     /// Returns the MIDI channel (0-15) of the track.

@@ -1,3 +1,4 @@
+use crate::audio_engine::export_wav;
 use crate::interface::Sample;
 use crate::interface::track::Track;
 use midly::num::{u4, u7, u15, u28};
@@ -59,6 +60,14 @@ impl Song {
         match export_type {
             ExportType::MIDI => {
                 let file_name = self.export_midi(name);
+
+                if open_in_default_app {
+                    open::that(&file_name).expect("Error opening export");
+                }
+            }
+            ExportType::WAV => {
+                export_wav(name, &self.tracks);
+                let file_name = format!("{}.wav", name);
 
                 if open_in_default_app {
                     open::that(&file_name).expect("Error opening export");

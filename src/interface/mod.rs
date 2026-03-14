@@ -6,4 +6,5 @@ mod track;
 pub use {
     sample::Sample,
     song::{ExportType, Song},
+    track::Track,
 };

@@ -20,5 +20,5 @@ fn main() {
         );
     }
 
-    song.export("output", ExportType::MIDI, true);
+    song.export("output", ExportType::WAV, true);
 }

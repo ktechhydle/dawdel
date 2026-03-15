@@ -35,7 +35,6 @@ impl Song {
             Timing::Metrical(t) => t.as_int() as f32,
             _ => panic!("Unsupported MIDI timing format"),
         };
-        let mut bpm: f32 = 120.0;
 
         // active notes: (channel, pitch) -> (start_tick, velocity)
         let mut active_notes: HashMap<(u8, u8), (u32, u8)> = HashMap::new();
@@ -45,14 +44,6 @@ impl Song {
 
             for event in midi_track {
                 absolute_tick += event.delta.as_int();
-
-                if let TrackEventKind::Meta(MetaMessage::Tempo(us_per_beat)) = event.kind {
-                    let us = us_per_beat.as_int() as f32;
-
-                    if us > 0.0 {
-                        bpm = 60_000_000.0 / us as f32;
-                    }
-                }
 
                 if let TrackEventKind::Midi { channel, message } = event.kind {
                     match message {
@@ -89,7 +80,7 @@ impl Song {
                                     );
                                 } else {
                                     let mut track =
-                                        Track::new(sample.clone(), channel.as_int(), bpm);
+                                        Track::new(sample.clone(), channel.as_int(), self.bpm);
 
                                     track.note(
                                         key.as_int(),

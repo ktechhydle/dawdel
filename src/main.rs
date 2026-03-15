@@ -1,4 +1,4 @@
-use dawdel::interface::{ExportType, Sample, Song};
+use dawdel::{ExportType, Sample, Song};
 use dawdel::{chord, note};
 
 fn main() {

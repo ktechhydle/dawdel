@@ -16,6 +16,6 @@ fn main() {
     }
 
     song.export("output", ExportType::MIDI, false); // export the midi file
-    song.export("output", ExportType::WAV, true); // export the wav audio and open it
+    song.export("output", ExportType::WAV(44100), true); // export the wav audio at 44100 samples and open it
 }
 ```

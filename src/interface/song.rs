@@ -5,9 +5,13 @@ use midly::{MetaMessage, MidiMessage, Smf, Timing, TrackEventKind};
 use std::collections::HashMap;
 use std::fs::{self};
 
+/// Options for exporting song objects.
+///
+/// - `MIDI` describes a MIDI file.
+/// - `WAV(u32)` describes a WAV file with the specified sample rate `u32`.
 pub enum ExportType {
     MIDI,
-    WAV,
+    WAV(u32),
 }
 
 /// A song object containing all track objects and a BPM variable.
@@ -26,8 +30,15 @@ impl Song {
         }
     }
 
-    /// Loads the midi `file` into seperated tracks using `sample`.
-    pub fn load_midi(&mut self, file: &str, sample: Sample) {
+    /// Loads the midi `file` into seperated tracks using `sample`, loading the midi starting at `starting_beat`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let mut song = Song::new(120);
+    /// song.load_midi("Bach.mid", Sample::new("my_samples/piano.wav", 60), 2.0); // load the midi data at 2 beats with a piano sound sample.
+    /// ```
+    pub fn load_midi(&mut self, file: &str, sample: Sample, starting_beat: f32) {
         let data = fs::read(file).expect("Failed to read MIDI file");
         let smf = Smf::parse(&data).expect("Invalid MIDI");
 
@@ -62,8 +73,10 @@ impl Song {
                             {
                                 let duration_ticks = absolute_tick - start_tick;
 
-                                let start_beats = start_tick as f32 / ticks_per_beat;
-                                let duration_beats = duration_ticks as f32 / ticks_per_beat;
+                                let start_beats =
+                                    (start_tick as f32 / ticks_per_beat) + starting_beat;
+                                let duration_beats =
+                                    (duration_ticks as f32 / ticks_per_beat) + starting_beat;
 
                                 let velocity_norm = velocity as f32 / 127.0;
 
@@ -153,8 +166,8 @@ impl Song {
                     open::that(&file_name).expect("Error opening export");
                 }
             }
-            ExportType::WAV => {
-                export_wav(name, &self.tracks);
+            ExportType::WAV(sample_rate) => {
+                export_wav(name, sample_rate, &self.tracks);
                 let file_name = format!("{}.wav", name);
 
                 if open_in_default_app {

@@ -9,14 +9,12 @@ fn beats_to_ticks(beats: f32, tpq: u16) -> u32 {
 }
 
 /// Renders all track samples + notes into two left and right master buffers
-fn render_tracks_wav(tracks: &Vec<Track>) -> (u32, Vec<f32>, Vec<f32>) {
+fn render_tracks_wav(sample_rate: u32, tracks: &Vec<Track>) -> (Vec<f32>, Vec<f32>) {
     if tracks.is_empty() {
-        return (44100, Vec::new(), Vec::new());
+        return (Vec::new(), Vec::new());
     }
 
-    // assume same sample rate across samples
     let bpm = tracks[0].bpm();
-    let sample_rate = tracks[0].sample().sample_rate;
     let song_duration = tracks
         .iter()
         .map(|t| t.current_beat() * (60.0 / bpm))
@@ -72,11 +70,11 @@ fn render_tracks_wav(tracks: &Vec<Track>) -> (u32, Vec<f32>, Vec<f32>) {
         }
     }
 
-    (sample_rate, left, right)
+    (left, right)
 }
 
-pub fn export_wav(name: &str, tracks: &Vec<Track>) {
-    let (sample_rate, left, right) = render_tracks_wav(tracks);
+pub fn export_wav(name: &str, sample_rate: u32, tracks: &Vec<Track>) {
+    let (left, right) = render_tracks_wav(sample_rate, tracks);
 
     let spec = hound::WavSpec {
         channels: 2,

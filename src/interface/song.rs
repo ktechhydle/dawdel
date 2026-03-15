@@ -10,6 +10,7 @@ pub enum ExportType {
     WAV,
 }
 
+/// A song object containing all track objects and a BPM variable.
 pub struct Song {
     bpm: f32,
     tracks: Vec<Track>,
@@ -20,6 +21,7 @@ fn beats_to_ticks(beats: f32, tpq: u16) -> u32 {
 }
 
 impl Song {
+    /// Constructs a new song object, where `bpm` is beats per minute.
     pub fn new(bpm: f32) -> Self {
         Self {
             bpm,
@@ -29,7 +31,7 @@ impl Song {
 
     /// Constructs a new track object and appends it to the song.
     ///
-    /// # Examples
+    /// # Example
     ///
     /// ```
     /// let mut song = Song::new(120);
@@ -38,13 +40,26 @@ impl Song {
     /// assert_eq!(track1.channel(), 0);
     /// ```
     pub fn track(&mut self, sample: Sample, channel: u8) -> &mut Track {
-        self.tracks.push(Track::new(sample, channel));
+        self.tracks.push(Track::new(sample, channel, self.bpm));
         self.tracks.last_mut().unwrap()
+    }
+
+    /// Returns the beats per minute (bpm) of the song.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let song = Song::new(120);
+    ///
+    /// assert_eq!(song.bpm(), 120);
+    /// ```
+    pub fn bpm(&self) -> f32 {
+        self.bpm
     }
 
     /// Returns all track objects contained in the song.
     ///
-    /// # Examples
+    /// # Example
     ///
     /// ```
     /// let mut song = Song::new(120);

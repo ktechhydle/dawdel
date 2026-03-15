@@ -1,14 +1,18 @@
 use crate::interface::Track;
 
 /// Renders all track samples + notes into a single master buffer
-fn render_tracks(tracks: &Vec<Track>) -> (u32, Vec<f32>) {
+fn render_tracks_wav(tracks: &Vec<Track>) -> (u32, Vec<f32>) {
     if tracks.is_empty() {
         return (0, Vec::new());
     }
 
     // assume same sample rate across samples
+    let bpm = tracks[0].bpm();
     let sample_rate = tracks[0].sample().sample_rate;
-    let song_duration = tracks.iter().map(|t| t.current_time()).fold(0.0, f32::max);
+    let song_duration = tracks
+        .iter()
+        .map(|t| t.current_beat() * (60.0 / bpm))
+        .fold(0.0, f32::max);
     let total_samples = (song_duration * (sample_rate) as f32) as usize;
 
     // master mix buffer
@@ -20,11 +24,11 @@ fn render_tracks(tracks: &Vec<Track>) -> (u32, Vec<f32>) {
         let root_note = sample.root_note;
 
         for note in track.notes() {
-            let start_index = (note.start * sample_rate as f32) as usize;
+            let start_index = (note.start * (60.0 / bpm) * sample_rate as f32) as usize;
             let pitch_ratio = 2f32.powf((note.pitch as f32 - root_note as f32) / 12.0);
             let velocity = note.velocity;
 
-            let max_samples = (note.duration * sample_rate as f32) as usize;
+            let max_samples = (note.duration * (60.0 / bpm) * sample_rate as f32) as usize;
             let mut i = 0usize;
 
             while i < max_samples {
@@ -51,7 +55,7 @@ fn render_tracks(tracks: &Vec<Track>) -> (u32, Vec<f32>) {
 }
 
 pub fn export_wav(name: &str, tracks: &Vec<Track>) {
-    let (sample_rate, samples) = render_tracks(tracks);
+    let (sample_rate, samples) = render_tracks_wav(tracks);
 
     let spec = hound::WavSpec {
         channels: 1,

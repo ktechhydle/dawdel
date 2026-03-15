@@ -11,7 +11,7 @@ pub struct Sample {
 impl Sample {
     /// Constructs a new sample object, where `wav_path` is the path to the WAV file, and `root_note` is the midi note number (0-127) of the base note.
     ///
-    /// # Examples
+    /// # Example
     ///
     /// ```
     /// let sample = Sample::new("my_samples/piano.wav", 60); // C4 = root note, anything above or below will be pitch shifted

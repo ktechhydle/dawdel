@@ -1,6 +1,6 @@
 /// Converts a note name into the corresponding midi note number.
 ///
-/// # Examples
+/// # Example
 ///
 /// ```
 /// let note_num = note!(C, 4);
@@ -49,7 +49,7 @@ macro_rules! note {
 
 /// Converts a chord name into the corresponding midi note numbers.
 ///
-/// # Examples
+/// # Example
 ///
 /// ```
 /// let note_nums = chord!(maj note!(C, 4));

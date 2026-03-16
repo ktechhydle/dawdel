@@ -1,14 +1,14 @@
 use crate::engine::{export_midi, export_wav};
 use crate::interface::Sample;
 use crate::interface::track::Track;
-use midly::{MetaMessage, MidiMessage, Smf, Timing, TrackEventKind};
+use midly::{MidiMessage, Smf, Timing, TrackEventKind};
 use std::collections::HashMap;
 use std::fs::{self};
 
 /// Options for exporting song objects.
 ///
-/// - `MIDI` describes a MIDI file.
-/// - `WAV(u32)` describes a WAV file with the specified sample rate `u32`.
+/// - `MIDI` describes a `.mid` file.
+/// - `WAV(u32)` describes a `.wav` file with the specified sample rate `u32`.
 pub enum ExportType {
     MIDI,
     WAV(u32),

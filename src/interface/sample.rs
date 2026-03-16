@@ -1,34 +1,95 @@
-use hound::WavReader;
+use std::fs::File;
+use symphonia::core::audio::{AudioBufferRef, Signal};
+use symphonia::core::codecs::DecoderOptions;
+use symphonia::core::formats::FormatOptions;
+use symphonia::core::io::MediaSourceStream;
+use symphonia::core::meta::MetadataOptions;
+use symphonia::default::{get_codecs, get_probe};
 
-/// A `.wav` file sample object and root note representing the general pitch shift of the sound sample.
+/// A sample object containing sound data, panning, sample rates, and a root note representing the general pitch shift of the sample.
 #[derive(Debug, Clone)]
 pub struct Sample {
     pub root_note: u8,
     pub pan: f32, // -1.0 to +1.0
     pub sample_rate: u32,
-    pub data: Vec<f32>,
+    pub data: Vec<(f32, f32)>, // L, R
 }
 
 impl Sample {
-    /// Constructs a new sample object, where `wav_path` is the path to the WAV file, and `root_note` is the midi note number (0-127) of the base note.
+    /// Constructs a new sample object, where `path` is a path to the audio file (`wav`, `mp3`, `.ogg`, `.flac`, `.acc`, and more), and `root_note` is the midi note number (0-127) of the base note.
     ///
     /// # Example
     ///
     /// ```
-    /// let sample = Sample::new("my_samples/piano.wav", 60); // C4 = root note, anything above or below will be pitch shifted
+    /// let sample = Sample::new("my_samples/piano.ogg", 60); // C4 = root note, anything above or below will be pitch shifted
     /// ```
-    pub fn new(wav_path: &str, root_note: u8) -> Self {
-        let mut reader = WavReader::open(wav_path).unwrap();
-        let sample_rate = reader.spec().sample_rate;
-        let data: Vec<f32> = reader
-            .samples::<i16>()
-            .map(|s| s.unwrap() as f32 / i16::MAX as f32)
-            .collect();
+    pub fn new(path: &str, root_note: u8) -> Self {
+        let file = File::open(path).unwrap();
+        let mss = MediaSourceStream::new(Box::new(file), Default::default());
+        let hint = symphonia::core::probe::Hint::new();
+
+        let probed = get_probe()
+            .format(
+                &hint,
+                mss,
+                &FormatOptions::default(),
+                &MetadataOptions::default(),
+            )
+            .unwrap();
+
+        let mut format = probed.format;
+        let track = format.default_track().unwrap();
+
+        let mut decoder = get_codecs()
+            .make(&track.codec_params, &DecoderOptions::default())
+            .unwrap();
+
+        let sample_rate = track.codec_params.sample_rate.unwrap();
+
+        let mut data = Vec::new();
+
+        loop {
+            let packet = match format.next_packet() {
+                Ok(packet) => packet,
+                Err(_) => break,
+            };
+
+            let decoded = decoder.decode(&packet).unwrap();
+
+            match decoded {
+                AudioBufferRef::F32(buf) => {
+                    let channels = buf.spec().channels.count();
+
+                    for i in 0..buf.frames() {
+                        let l = buf.chan(0)[i];
+                        let r = if channels > 1 { buf.chan(1)[i] } else { l };
+                        data.push((l, r));
+                    }
+                }
+
+                AudioBufferRef::S16(buf) => {
+                    let channels = buf.spec().channels.count();
+
+                    for i in 0..buf.frames() {
+                        let l = buf.chan(0)[i] as f32 / i16::MAX as f32;
+                        let r = if channels > 1 {
+                            buf.chan(1)[i] as f32 / i16::MAX as f32
+                        } else {
+                            l
+                        };
+
+                        data.push((l, r));
+                    }
+                }
+
+                _ => {}
+            }
+        }
 
         Self {
             root_note,
             pan: 0.0,
-            sample_rate: sample_rate,
+            sample_rate,
             data,
         }
     }

@@ -10,3 +10,4 @@ description = "Programmatic digital audio workstation for MIDI"
 hound = "3.5.1"
 midly = "0.5.3"
 open = "5.3.3"
+symphonia = { version = "0.5.5", features = ["all"] }

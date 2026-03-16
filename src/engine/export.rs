@@ -1,4 +1,4 @@
-use crate::interface::{Song, Track};
+use crate::interface::Song;
 use midly::num::{u4, u7, u15, u24, u28};
 use midly::{Format, Header, MetaMessage, MidiMessage, Smf, Timing, TrackEvent, TrackEventKind};
 use std::fs::File;
@@ -54,12 +54,14 @@ fn render_tracks_wav(sample_rate: u32, song: &Song) -> (Vec<f32>, Vec<f32>) {
                     break;
                 }
 
-                let s = sample_data[source_index] * velocity;
+                let (sl, sr) = sample_data[source_index];
+                let s_l = sl * velocity;
+                let s_r = sr * velocity;
 
                 // constant power panning
                 let angle = (pan + 1.0) * std::f32::consts::FRAC_PI_4;
-                let l = s * angle.cos();
-                let r = s * angle.sin();
+                let l = s_l * angle.cos();
+                let r = s_l * angle.sin();
 
                 left[dest_index] += l;
                 right[dest_index] += r;

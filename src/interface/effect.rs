@@ -46,22 +46,31 @@ impl ReverbEffect {
 
 impl Effect for ReverbEffect {
     fn modify(&self, sample_rate: u32, data: &[(f32, f32)]) -> Vec<(f32, f32)> {
-        let delay_samples = (sample_rate as f32 * self.room_size) as usize;
-        let mut output = vec![(0.0, 0.0); data.len()];
+        let reflections = [
+            (0.012, 0.6),
+            (0.017, 0.5),
+            (0.023, 0.4),
+            (0.031, 0.3),
+            (0.045, 0.2),
+        ];
 
-        for i in 0..data.len() {
-            let (l, r) = data[i];
+        let mut output = data.to_vec();
 
-            let delayed = if i >= delay_samples {
-                output[i - delay_samples]
-            } else {
-                (0.0, 0.0)
-            };
+        for &(delay_sec, decay) in &reflections {
+            let delay_samples = (delay_sec * self.room_size * sample_rate as f32) as usize;
 
-            let out_l = l * self.dry + delayed.0 * self.wet;
-            let out_r = r * self.dry + delayed.1 * self.wet;
+            for i in delay_samples..output.len() {
+                let (dl, dr) = output[i - delay_samples];
 
-            output[i] = (out_l, out_r);
+                output[i].0 += dl * decay * self.wet;
+                output[i].1 += dr * decay * self.wet;
+            }
+        }
+
+        for i in 0..output.len() {
+            output[i].0 = output[i].0 * self.wet + data[i].0 * self.dry;
+
+            output[i].1 = output[i].1 * self.wet + data[i].1 * self.dry;
         }
 
         output

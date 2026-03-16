@@ -2,7 +2,7 @@
 name = "dawdel"
 version = "0.1.0"
 edition = "2024"
-license = "GPL v3"
+license = "GPL-3.0"
 authors = ["Motivation Software Inc."]
 description = "Programmatic digital audio workstation for MIDI"
 

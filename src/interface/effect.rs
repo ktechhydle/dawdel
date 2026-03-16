@@ -6,13 +6,13 @@
 /// # Example
 ///
 /// ```
-/// pub struct VolumeEffect {
+/// pub struct RandomEffect {
 ///     amount: f32,
 /// }
 ///
-/// impl Effect for VolumeEffect {
+/// impl Effect for RandomEffect {
 ///     fn modify(&self, sample_rate: u32, data: &[(f32, f32)]) -> Vec<(f32, f32)> {
-///         let new_data = Vec::new();
+///         let mut new_data = Vec::new();
 ///
 ///         for (l, r) in data {
 ///             new_data.push((l + self.amount, r + self.amount))
@@ -115,7 +115,6 @@ impl Effect for DelayEffect {
             let echo_r = delayed_r * self.feedback;
 
             output[i].0 = data[i].0 * self.dry + echo_l * self.wet;
-
             output[i].1 = data[i].1 * self.dry + echo_r * self.wet;
         }
 

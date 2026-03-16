@@ -6,6 +6,8 @@ use symphonia::core::io::MediaSourceStream;
 use symphonia::core::meta::MetadataOptions;
 use symphonia::default::{get_codecs, get_probe};
 
+use crate::interface::Effect;
+
 /// A sample object containing sound data, panning, sample rates, and a root note representing the general pitch shift of the sample.
 #[derive(Debug, Clone)]
 pub struct Sample {
@@ -92,6 +94,18 @@ impl Sample {
             sample_rate,
             data,
         }
+    }
+
+    pub fn add_effect<T>(&mut self, effect: T)
+    where
+        T: Effect,
+    {
+        self.data = effect.modify(self.sample_rate, &self.data);
+    }
+
+    /// Set the root note pitch of the sample (midi numbers 0-127)
+    pub fn set_root_note(&mut self, root_note: u8) {
+        self.root_note = root_note;
     }
 
     /// Set the stereo panning of the sample (-1.0 to 1.0, where negative values pan left, and positive values pan right)

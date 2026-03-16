@@ -5,7 +5,9 @@
 ///
 /// # Example
 ///
-/// ```
+/// ```no_run
+/// use dawdel::Effect;
+///
 /// pub struct RandomEffect {
 ///     amount: f32,
 /// }

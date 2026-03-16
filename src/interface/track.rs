@@ -16,9 +16,10 @@ impl Track {
     ///
     /// # Example
     ///
-    /// ```
-    /// let track1 = Track::new(Sample::new("my_samples/piano.wav", 60), 0, 120.0);
+    /// ```no_run
+    /// use dawdel::{Track, Sample};
     ///
+    /// let track1 = Track::new(Sample::new("my_samples/piano.wav", 60), 0, 120.0);
     /// assert_eq!(track1.channel(), 0);
     /// ```
     pub fn new(sample: Sample, channel: u8, bpm: f32) -> Self {
@@ -66,9 +67,10 @@ impl Track {
     ///
     /// # Example
     ///
-    /// ```
-    /// let mut track1 = Track::new(Sample::new("my_samples/piano.wav", 60), 0.0);
+    /// ```no_run
+    /// use dawdel::{Track, Sample};
     ///
+    /// let mut track1 = Track::new(Sample::new("my_samples/piano.wav", 60), 0, 0.0);
     /// track1.note(60, 127, 0.0, 2.0); // C4 at full velocity, played for 2 beats
     /// ```
     pub fn note(&mut self, pitch: u8, velocity: u8, start: f32, duration: f32) {
@@ -88,9 +90,10 @@ impl Track {
     ///
     /// # Example
     ///
-    /// ```
-    /// let mut track1 = Track::new(Sample::new("my_samples/piano.wav", 60), 0.0);
+    /// ```no_run
+    /// use dawdel::{Track, Sample};
     ///
+    /// let mut track1 = Track::new(Sample::new("my_samples/piano.wav", 60), 0, 0.0);
     /// track1.chord(vec![60, 64, 67], 127, 0.0, 2.0); // Csus4 at full velocity, played for 2 beats
     /// ```
     pub fn chord(&mut self, notes: Vec<u8>, velocity: u8, start: f32, duration: f32) {
@@ -112,8 +115,10 @@ impl Track {
     ///
     /// # Example
     ///
-    /// ```
-    /// let mut track1 = Track::new(Sample::new("my_samples/piano.wav", 60), 0.0);
+    /// ```no_run
+    /// use dawdel::{Track, Sample};
+    ///
+    /// let mut track1 = Track::new(Sample::new("my_samples/piano.wav", 60), 0, 0.0);
     /// track1.set_offset(2.0); // offset by 2 beats, during export the track will start playing at 2 beats
     /// ```
     pub fn set_offset(&mut self, offset: f32) {

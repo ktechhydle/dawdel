@@ -22,10 +22,11 @@ impl Sample {
     ///
     /// # Example
     ///
-    /// ```
-    /// let sample = Sample::new("my_samples/piano.ogg", 60); // C4 = root note, anything above or below will be pitch shifted
+    /// ```no_run
+    /// use dawdel::Sample;
     ///
-    /// assert_eq!(sample.root_note, 60);
+    /// let sample = Sample::new("my_samples/piano.ogg", 60); // C4 = root note, anything above or below will be pitch shifted
+    /// assert_eq!(sample.root_note(), 60);
     /// ```
     pub fn new(path: &str, root_note: u8) -> Self {
         let file = File::open(path).unwrap();

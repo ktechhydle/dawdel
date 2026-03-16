@@ -34,7 +34,9 @@ impl Song {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```no_run
+    /// use dawdel::{Song, Sample};
+    ///
     /// let mut song = Song::new(120.0);
     /// song.load_midi("Bach.mid", Sample::new("my_samples/piano.wav", 60), 2.0); // load the midi data at 2 beats with a piano sound sample.
     /// ```
@@ -120,7 +122,9 @@ impl Song {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```no_run
+    /// use dawdel::{Song, Sample};
+    ///
     /// let mut song = Song::new(120.0);
     /// let track1 = song.create_track(Sample::new("my_samples/piano.wav", 60), 0);
     ///
@@ -134,7 +138,9 @@ impl Song {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```no_run
+    /// use dawdel::{Song, Sample};
+    ///
     /// let mut song = Song::new(120.0);
     /// let track1 = song.create_track(Sample::new("my_samples/piano.wav", 60), 0);
     ///
@@ -150,8 +156,9 @@ impl Song {
     /// # Example
     ///
     /// ```
-    /// let song = Song::new(120.0);
+    /// use dawdel::Song;
     ///
+    /// let song = Song::new(120.0);
     /// assert_eq!(song.bpm(), 120.0);
     /// ```
     pub fn bpm(&self) -> f32 {
@@ -162,7 +169,9 @@ impl Song {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```no_run
+    /// use dawdel::{Song, Sample};
+    ///
     /// let mut song = Song::new(120.0);
     /// let track1 = song.create_track(Sample::new("my_samples/piano.wav", 60), 0);
     /// song.add_track(track1);
@@ -178,7 +187,9 @@ impl Song {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```no_run
+    /// use dawdel::{Song, Sample, ExportType, note};
+    ///
     /// let mut song = Song::new(120.0);
     /// let mut track1 = song.create_track(Sample::new("my_samples/piano.wav", 60), 0);
     /// track1.note(note!(C, 4), 127, track1.current_beat(), 2.0);

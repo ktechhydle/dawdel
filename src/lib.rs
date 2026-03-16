@@ -4,12 +4,12 @@
 //!
 //! The following example generates a 16-second long song with a dark and ominous tone.
 //!
-//! ```
+//! ```no_run
 //! use dawdel::{ExportType, Sample, Song};
 //! use dawdel::{chord, note};
 //!
 //! let mut song = Song::new(120.0); // 120 bpm
-//! let track1 = song.create_track(Sample::new("test.wav", 60), 1); // create a new track
+//! let mut track1 = song.create_track(Sample::new("test.wav", 60), 1); // create a new track
 //!
 //! for _ in 0..8 {
 //!     track1.note(note!(C, 4), 127, track1.current_beat(), 2.0);

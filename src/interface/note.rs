@@ -3,8 +3,9 @@
 /// # Example
 ///
 /// ```
-/// let note_num = note!(C, 4);
+/// use dawdel::note;
 ///
+/// let note_num = note!(C, 4);
 /// assert_eq!(note_num, 60)
 /// ```
 #[macro_export]
@@ -52,8 +53,9 @@ macro_rules! note {
 /// # Example
 ///
 /// ```
-/// let note_nums = chord!(maj note!(C, 4));
+/// use dawdel::{chord, note};
 ///
+/// let note_nums = chord!(maj note!(C, 4));
 /// assert_eq!(note_nums, vec![60, 64, 67])
 /// ```
 #[macro_export]

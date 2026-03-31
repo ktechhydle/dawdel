@@ -1,13 +1,13 @@
 name: Request a feature.
-description: Request a new feature to be added to Motivation's software.
+description: Request a new feature to be added to dawdel.
 type: Feature
 labels: "state:needs triage"
 body:
   - type: textarea
     attributes:
       label: Feature
-      description: Request (a realistic) feature to be potentially implemented. 
+      description: Request (a realistic) feature to be potentially implemented.
       placeholder: |
-        A gravity amount controller for Earth's internal API. 
+        A gravity amount controller for Earth's internal API.
     validations:
       required: true

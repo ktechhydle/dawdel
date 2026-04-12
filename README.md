@@ -22,7 +22,7 @@ fn main() {
 ```
 
 ## About
-dawdel is both an audio processing engine and MIDI toolkit. Its simple, yet a very powerful toolkit designed for working with:
+dawdel is both an audio processing engine and MIDI toolkit. Its a simple, yet very powerful toolkit designed for working with:
 
 - **Samples** Create samples + effects from all audio formats supported by [Symphonia](https://github.com/pdeljanov/Symphonia).
 - **Tracks** Organize music into seperate tracks and control MIDI channeling. 

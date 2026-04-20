@@ -29,73 +29,77 @@ impl Sample {
     /// assert_eq!(sample.root_note(), 60);
     /// ```
     pub fn new(path: &str, root_note: u8) -> Self {
-        let file = File::open(path).unwrap();
-        let mss = MediaSourceStream::new(Box::new(file), Default::default());
-        let hint = symphonia::core::probe::Hint::new();
+        match File::open(path) {
+            Ok(file) => {
+                let mss = MediaSourceStream::new(Box::new(file), Default::default());
+                let hint = symphonia::core::probe::Hint::new();
 
-        let probed = get_probe()
-            .format(
-                &hint,
-                mss,
-                &FormatOptions::default(),
-                &MetadataOptions::default(),
-            )
-            .unwrap();
+                let probed = get_probe()
+                    .format(
+                        &hint,
+                        mss,
+                        &FormatOptions::default(),
+                        &MetadataOptions::default(),
+                    )
+                    .unwrap();
 
-        let mut format = probed.format;
-        let track = format.default_track().unwrap();
+                let mut format = probed.format;
+                let track = format.default_track().unwrap();
 
-        let mut decoder = get_codecs()
-            .make(&track.codec_params, &DecoderOptions::default())
-            .unwrap();
+                let mut decoder = get_codecs()
+                    .make(&track.codec_params, &DecoderOptions::default())
+                    .unwrap();
 
-        let sample_rate = track.codec_params.sample_rate.unwrap();
+                let sample_rate = track.codec_params.sample_rate.unwrap();
 
-        let mut data = Vec::new();
+                let mut data = Vec::new();
 
-        loop {
-            let packet = match format.next_packet() {
-                Ok(packet) => packet,
-                Err(_) => break,
-            };
+                loop {
+                    let packet = match format.next_packet() {
+                        Ok(packet) => packet,
+                        Err(_) => break,
+                    };
 
-            let decoded = decoder.decode(&packet).unwrap();
+                    let decoded = decoder.decode(&packet).unwrap();
 
-            match decoded {
-                AudioBufferRef::F32(buf) => {
-                    let channels = buf.spec().channels.count();
+                    match decoded {
+                        AudioBufferRef::F32(buf) => {
+                            let channels = buf.spec().channels.count();
 
-                    for i in 0..buf.frames() {
-                        let l = buf.chan(0)[i];
-                        let r = if channels > 1 { buf.chan(1)[i] } else { l };
-                        data.push((l, r));
+                            for i in 0..buf.frames() {
+                                let l = buf.chan(0)[i];
+                                let r = if channels > 1 { buf.chan(1)[i] } else { l };
+                                data.push((l, r));
+                            }
+                        }
+
+                        AudioBufferRef::S16(buf) => {
+                            let channels = buf.spec().channels.count();
+
+                            for i in 0..buf.frames() {
+                                let l = buf.chan(0)[i] as f32 / i16::MAX as f32;
+                                let r = if channels > 1 {
+                                    buf.chan(1)[i] as f32 / i16::MAX as f32
+                                } else {
+                                    l
+                                };
+
+                                data.push((l, r));
+                            }
+                        }
+
+                        _ => {}
                     }
                 }
 
-                AudioBufferRef::S16(buf) => {
-                    let channels = buf.spec().channels.count();
-
-                    for i in 0..buf.frames() {
-                        let l = buf.chan(0)[i] as f32 / i16::MAX as f32;
-                        let r = if channels > 1 {
-                            buf.chan(1)[i] as f32 / i16::MAX as f32
-                        } else {
-                            l
-                        };
-
-                        data.push((l, r));
-                    }
+                Self {
+                    root_note,
+                    pan: 0.0,
+                    sample_rate,
+                    data,
                 }
-
-                _ => {}
             }
-        }
-
-        Self {
-            root_note,
-            pan: 0.0,
-            sample_rate,
-            data,
+            Err(e) => panic!("Error locating sample file: {e}"),
         }
     }
 

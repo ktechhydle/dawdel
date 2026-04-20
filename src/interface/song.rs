@@ -5,12 +5,11 @@ use midly::{MidiMessage, Smf, Timing, TrackEventKind};
 use std::collections::HashMap;
 use std::fs::{self};
 
-/// Options for exporting song objects.
-///
-/// - `MIDI` describes a `.mid` file.
-/// - `WAV(u32)` describes a `.wav` file with the specified sample rate `u32`.
+/// Describes the song export type.
 pub enum ExportType {
+    /// The MIDI file format.
     MIDI,
+    /// The WAV file format.
     WAV(u32),
 }
 
@@ -195,24 +194,22 @@ impl Song {
     /// track1.note(note!(C, 4), 127, track1.current_beat(), 2.0);
     ///
     /// song.add_track(track1);
-    /// song.export("my_song", ExportType::MIDI, true); // exports `my_song.mid` and opens it in a default application
+    /// song.export("my_song.mid", ExportType::MIDI, true); // exports `my_song.mid` and opens it in a default application
     /// ```
-    pub fn export(&self, name: &str, export_type: ExportType, open_in_default_app: bool) {
+    pub fn export(&self, filename: &str, export_type: ExportType, open_in_default_app: bool) {
         match export_type {
             ExportType::MIDI => {
-                export_midi(name, self);
-                let file_name = format!("{}.mid", name);
+                export_midi(filename, self);
 
                 if open_in_default_app {
-                    open::that(&file_name).expect("Error opening export");
+                    open::that(&filename).expect("Error opening export");
                 }
             }
             ExportType::WAV(sample_rate) => {
-                export_wav(name, sample_rate, self);
-                let file_name = format!("{}.wav", name);
+                export_wav(filename, sample_rate, self);
 
                 if open_in_default_app {
-                    open::that(&file_name).expect("Error opening export");
+                    open::that(&filename).expect("Error opening export");
                 }
             }
         }

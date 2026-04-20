@@ -74,7 +74,7 @@ fn render_tracks_wav(sample_rate: u32, song: &Song) -> (Vec<f32>, Vec<f32>) {
     (left, right)
 }
 
-pub fn export_wav(name: &str, sample_rate: u32, song: &Song) {
+pub fn export_wav(filename: &str, sample_rate: u32, song: &Song) {
     let (left, right) = render_tracks_wav(sample_rate, song);
 
     let spec = hound::WavSpec {
@@ -83,7 +83,7 @@ pub fn export_wav(name: &str, sample_rate: u32, song: &Song) {
         bits_per_sample: 16,
         sample_format: hound::SampleFormat::Int,
     };
-    let mut writer = hound::WavWriter::create(format!("{}.wav", name), spec).unwrap();
+    let mut writer = hound::WavWriter::create(filename, spec).unwrap();
 
     for i in 0..left.len() {
         let l = (left[i] * i16::MAX as f32).clamp(i16::MIN as f32, i16::MAX as f32) as i16;
@@ -96,7 +96,7 @@ pub fn export_wav(name: &str, sample_rate: u32, song: &Song) {
     writer.finalize().unwrap()
 }
 
-pub fn export_midi(name: &str, song: &Song) {
+pub fn export_midi(filename: &str, song: &Song) {
     let ticks_per_beat: u16 = 480;
 
     let header = Header {
@@ -181,7 +181,6 @@ pub fn export_midi(name: &str, song: &Song) {
         tracks: midi_tracks,
     };
 
-    let file_name = format!("{}.mid", name);
-    let mut file = File::create(&file_name).unwrap();
+    let mut file = File::create(&filename).unwrap();
     smf.write_std(&mut file).unwrap();
 }

@@ -48,7 +48,7 @@ macro_rules! note {
     };
 }
 
-/// Converts a chord name into the corresponding midi note numbers.
+/// Converts a chord name into the corresponding MIDI note numbers.
 ///
 /// # Example
 ///
@@ -56,28 +56,28 @@ macro_rules! note {
 /// use dawdel::{chord, note};
 ///
 /// let note_nums = chord!(maj note!(C, 4));
-/// assert_eq!(note_nums, vec![60, 64, 67])
+/// assert_eq!(note_nums, &[60, 64, 67])
 /// ```
 #[macro_export]
 macro_rules! chord {
     (maj $root:expr) => {
-        vec![$root, $root + 4, $root + 7]
+        &[$root, $root + 4, $root + 7]
     };
 
     (min $root:expr) => {
-        vec![$root, $root + 3, $root + 7]
+        &[$root, $root + 3, $root + 7]
     };
 
     (maj7 $root:expr) => {
-        vec![$root, $root + 4, $root + 7, $root + 11]
+        &[$root, $root + 4, $root + 7, $root + 11]
     };
 
     (min7 $root:expr) => {
-        vec![$root, $root + 3, $root + 7, $root + 10]
+        &[$root, $root + 3, $root + 7, $root + 10]
     };
 }
 
-/// A note object, containing pitch (0-127), start time, duration, and velocity.
+/// A note object.
 #[derive(Debug, Clone)]
 pub struct Note {
     pub pitch: u8,

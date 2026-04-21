@@ -110,14 +110,14 @@ impl Track {
     /// let mut track1 = Track::new(Sample::new("my_samples/piano.wav", 60), 0, 0.0);
     /// track1.chord(&[60, 64, 67], 127, 0.0, 2.0); // Csus4 at full velocity, played for 2 beats
     /// ```
-    pub fn chord(&mut self, notes: Vec<u8>, velocity: u8, start: f32, duration: f32) {
+    pub fn chord(&mut self, notes: &[u8], velocity: u8, start: f32, duration: f32) {
         if start + duration > self.current_beat {
             self.current_beat = start + duration
         }
 
         for n in notes {
             self.notes.push(Note {
-                pitch: n,
+                pitch: n.clone(),
                 velocity: velocity as f32 / 127.0,
                 start,
                 duration,

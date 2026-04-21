@@ -106,14 +106,21 @@ impl Sample {
         }
     }
 
-    /// Adds the effect to the effects chain, modifying the sample's audio data.
+    /// Appends the effect to the effects chain, modifying the sample's audio data.
     ///
     /// - `effect`: the audio effect that implements the `Effect` trait
-    pub fn add_effect<T>(&mut self, effect: T)
-    where
-        T: Effect,
-    {
+    ///
+    /// # Example
+    ///
+    /// ```no_run
+    /// use dawdel::{Sample, ReverbEffect};
+    ///
+    /// let sample = Sample::new("my_samples/piano.ogg", 60).with_effect(ReverbEffect::new(1.0, 0.7, 0.1));
+    /// ```
+    pub fn with_effect<T: Effect>(mut self, effect: T) -> Self {
         self.data = effect.modify(self.sample_rate, &self.data);
+
+        self
     }
 
     /// Returns the root note of the sample.
